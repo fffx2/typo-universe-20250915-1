@@ -375,7 +375,6 @@ function updateTypographyDisplay(typography, accessibility) {
 }
 
 
-// === 💅 수정된 부분 시작 ===
 // AI 메시지 업데이트 (타이핑 효과 적용)
 function updateAIMessage(message) {
     const messageContainer = document.getElementById('ai-message');
@@ -406,7 +405,6 @@ function updateAIMessage(message) {
 
     typeWriter();
 }
-// === 💅 수정된 부분 끝 ===
 
 // ==================== 색상 조작 헬퍼 함수 ====================
 // 색상을 밝게 만들기
