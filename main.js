@@ -22,7 +22,7 @@ let typingTimeout;
 async function initializeApp() {
     try {
         // knowledge_base.json 파일 로드
-        const response = await fetch('knowledge_base.json');
+        const response = await fetch('./knowledge_base.json');
         knowledgeBase = await response.json();
         
         // 드롭다운 메뉴 초기화
@@ -30,9 +30,6 @@ async function initializeApp() {
         
         // 무드 슬라이더 초기화
         initializeSliders();
-        
-        // 실험실 페이지 초기화
-        initializeLabPage();
         
         // 초기 AI 메시지 설정 (타이핑 효과 적용)
         updateAIMessage("안녕하세요! TYPOUNIVERSE AI Design Assistant입니다. 어떤 프로젝트를 위한 디자인 가이드를 찾으시나요? 먼저 서비스의 목적과 타겟 플랫폼을 알려주세요.");
@@ -79,35 +76,6 @@ function initializeSliders() {
     // 슬라이더 변경 이벤트 리스너 추가
     softHardSlider.addEventListener('input', updateMood);
     staticDynamicSlider.addEventListener('input', updateMood);
-}
-
-// ==================== 실험실 페이지 초기화 ====================
-function initializeLabPage() {
-    // 색상 입력 요소들 가져오기
-    const bgColorInput = document.getElementById('bg-color-input');
-    const bgColorPicker = document.getElementById('bg-color-picker');
-    const textColorInput = document.getElementById('text-color-input');
-    const textColorPicker = document.getElementById('text-color-picker');
-    const lineHeightInput = document.getElementById('line-height-input');
-    
-    // 배경색 변경 이벤트
-    bgColorInput.addEventListener('change', updateContrast);
-    bgColorPicker.addEventListener('change', () => {
-        bgColorInput.value = bgColorPicker.value;
-        updateContrast();
-    });
-    
-    // 텍스트색 변경 이벤트
-    textColorInput.addEventListener('change', updateContrast);
-    textColorPicker.addEventListener('change', () => {
-        textColorInput.value = textColorPicker.value;
-        updateContrast();
-    });
-    
-    // 행간 변경 이벤트
-    lineHeightInput.addEventListener('input', () => {
-        updateLineHeight(lineHeightInput.value);
-    });
 }
 
 // ==================== STEP 01: 드롭다운 기능 ====================
@@ -341,6 +309,12 @@ function displayGeneratedGuide(data) {
     document.getElementById('guidelines').style.display = 'grid';
     
     updateAIMessage(`${appState.platform} 플랫폼에 최적화된 디자인 가이드가 생성되었습니다!`);
+    
+    // 실험실 링크에 색상 정보 추가
+    const labLink = document.getElementById('lab-link');
+    const primaryColor = encodeURIComponent(data.colorSystem.primary.main);
+    const textColor = encodeURIComponent(data.accessibility.textColorOnPrimary);
+    labLink.href = `./lab.html?bg=${primaryColor}&text=${textColor}`;
 }
 
 
@@ -447,104 +421,6 @@ function getComplementaryColor(color) {
     return `#${adjustedR.toString(16).padStart(2, '0')}${adjustedG.toString(16).padStart(2, '0')}${adjustedB.toString(16).padStart(2, '0')}`;
 }
 
-// ==================== 페이지 네비게이션 ====================
-// 메인 페이지로 이동
-function showMainPage() {
-    document.querySelector('.main-page').classList.remove('hidden');
-    document.querySelector('.lab-page').classList.remove('active');
-    document.querySelector('.lab-page').style.display = 'none';
-}
-
-// 실험실 페이지로 이동
-function showLabPage() {
-    document.querySelector('.main-page').classList.add('hidden');
-    document.querySelector('.lab-page').classList.add('active');
-    document.querySelector('.lab-page').style.display = 'block';
-    
-    // 생성된 색상이 있으면 실험실에 반영
-    if (appState.primaryColor) {
-        document.getElementById('bg-color-input').value = appState.primaryColor;
-        document.getElementById('bg-color-picker').value = appState.primaryColor;
-        updateContrast();
-    }
-}
-
-
-// ==================== 실험실 기능 ====================
-// 색상 대비 업데이트
-function updateContrast() {
-    const bgColor = document.getElementById('bg-color-input').value;
-    const textColor = document.getElementById('text-color-input').value;
-    
-    // 대비율 계산
-    const ratio = calculateContrast(bgColor, textColor);
-    document.getElementById('contrast-ratio').textContent = ratio.toFixed(2) + ' : 1';
-    
-    // 미리보기 업데이트
-    document.getElementById('large-preview').style.background = bgColor;
-    document.getElementById('large-preview').style.color = textColor;
-    document.getElementById('small-preview').style.background = bgColor;
-    document.getElementById('small-preview').style.color = textColor;
-    
-    // WCAG 기준 통과 여부 표시
-    const aaStatus = document.getElementById('aa-status');
-    const aaaStatus = document.getElementById('aaa-status');
-    
-    // AA 기준 (4.5:1)
-    aaStatus.classList.toggle('pass', ratio >= 4.5);
-    aaStatus.classList.toggle('fail', ratio < 4.5);
-    
-    // AAA 기준 (7:1)
-    aaaStatus.classList.toggle('pass', ratio >= 7);
-    aaaStatus.classList.toggle('fail', ratio < 7);
-}
-
-// 행간 업데이트
-function updateLineHeight(value) {
-    document.getElementById('line-height-value').textContent = value;
-    document.querySelectorAll('.text-preview').forEach(preview => {
-        preview.style.lineHeight = value;
-    });
-}
-
-// 색상 대비율 계산
-function calculateContrast(bg, fg) {
-    const bgRgb = hexToRgb(bg);
-    const fgRgb = hexToRgb(fg);
-    
-    if (!bgRgb || !fgRgb) return 1;
-    
-    // 휘도(luminance) 계산
-    const bgLum = luminance(bgRgb);
-    const fgLum = luminance(fgRgb);
-    
-    // 대비율 계산 (밝은색 + 0.05) / (어두운색 + 0.05)
-    const lighter = Math.max(bgLum, fgLum);
-    const darker = Math.min(bgLum, fgLum);
-    
-    return (lighter + 0.05) / (darker + 0.05);
-}
-
-// HEX를 RGB로 변환
-function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
-
-// 휘도 계산 (WCAG 공식)
-function luminance(rgb) {
-    const { r, g, b } = rgb;
-    const sRGB = [r, g, b].map(val => {
-        val = val / 255;
-        return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
-    });
-    return sRGB[0] * 0.2126 + sRGB[1] * 0.7152 + sRGB[2] * 0.0722;
-}
-
 // ==================== 이벤트 리스너 ====================
 // 드롭다운 외부 클릭 시 닫기
 document.addEventListener('click', function(event) {
@@ -557,7 +433,3 @@ document.addEventListener('click', function(event) {
 
 // ==================== 전역 함수 등록 (HTML onclick 핸들러용) ====================
 window.toggleDropdown = toggleDropdown;
-window.showMainPage = showMainPage;
-window.showLabPage = showLabPage;
-window.updateContrast = updateContrast;
-window.updateLineHeight = updateLineHeight;

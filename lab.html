@@ -19,7 +19,7 @@
             </div>
         </header>
 
-        <div class="lab-page" style="display: block;">
+        <div class="lab-page active">
             <div class="contrast-test">
                 <h2 style="font-size: 20px; margin-bottom: 30px;">색상 대비 실시간 테스트</h2>
                 
@@ -67,9 +67,34 @@
                     <div class="preview-body">일반 텍스트는 일반 글자인 경우 16pt 이하,<br>굵은 글꼴일 경우 12pt 이하에 적용됩니다.</div>
                 </div>
             </div>
+
+            <div class="bottom-font-units">
+                <h2 style="font-size: 20px; margin-bottom: 20px;">플랫폼별 폰트 단위 비교</h2>
+                <div class="font-size-input-wrapper">
+                    <label for="font-size-input">Font size</label>
+                    <input type="number" id="font-size-input" value="16">
+                </div>
+                <div class="font-unit-cards">
+                    <div class="font-unit-card">
+                        <h4>pt_point</h4>
+                        <p class="font-example" id="pt-example">고정 크기 텍스트 예시</p>
+                        <span>for MacOS / iOS</span>
+                    </div>
+                    <div class="font-unit-card">
+                        <h4>px_pixel</h4>
+                        <p class="font-example" id="px-example">고정 크기 텍스트 예시</p>
+                        <span>for Screen</span>
+                    </div>
+                    <div class="font-unit-card">
+                        <h4>sp, dp</h4>
+                        <p class="font-example" id="sp-example">고정 크기 텍스트 예시</p>
+                        <span>for Android</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
-    <script src="./main.js"></script>
+    <script src="./lab.js"></script>
 </body>
 </html>
