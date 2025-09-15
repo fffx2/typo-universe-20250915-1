@@ -357,7 +357,7 @@ body {
 .color-code {
     font-size: 16px;
     font-weight: 600;
-    font-family: inherit; /* Pretendard 폰트를 상속받도록 수정했어요 */
+    font-family: inherit;
 }
 
 /* Typography */
@@ -431,9 +431,9 @@ body {
 }
 
 /* Lab Page Styles */
-.lab-content { /* 새로운 lab-content 클래스에 grid를 적용했어요 */
+.lab-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     gap: 40px;
     align-items: start;
 }
@@ -446,7 +446,7 @@ body {
     display: none;
 }
 
-.contrast-test {
+.contrast-test, .bottom-font-units {
     background: white;
     padding: 30px;
     border-radius: 12px;
@@ -455,7 +455,7 @@ body {
 
 .color-inputs {
     display: grid;
-    grid-template-columns: 1fr; /* 1단으로 변경 */
+    grid-template-columns: 1fr;
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -477,7 +477,7 @@ body {
     padding: 8px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    font-family: inherit; /* Pretendard 폰트 상속 */
+    font-family: inherit;
 }
 
 .color-picker {
@@ -544,14 +544,6 @@ body {
 .preview-body {
     font-size: 16px;
     line-height: 1.6;
-}
-
-/* Bottom Font Units Section (UI 스타일 통일) */
-.bottom-font-units {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
 }
 
 .section-header-lab {
