@@ -19,7 +19,7 @@
             </div>
         </header>
 
-        <div class="lab-content">
+        <div class="lab-page active">
             <div class="contrast-test">
                 <h2 class="section-header-lab">색상 대비 실시간 테스트</h2>
                 
@@ -40,7 +40,9 @@
                     </div>
                     <div class="input-group">
                         <label>Line height</label>
-                        <input type="range" min="1" max="2.5" step="0.1" value="1.6" id="line-height-input" style="width: 100%;">
+                        <div class="slider-container lab-slider">
+                            <input type="range" class="slider" min="1" max="2.5" step="0.1" value="1.6" id="line-height-input">
+                        </div>
                         <div style="text-align: center; margin-top: 5px;">
                             <span id="line-height-value">1.6</span>
                         </div>
