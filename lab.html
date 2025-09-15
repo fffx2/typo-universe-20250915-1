@@ -1,69 +1,73 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인터랙티브 실험실 - TYPOUNIVERSE</title>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
-    <link rel="stylesheet" href="styles.css">
-</head>
+<header class="header">
+    <div class="header-left">
+        <a href="index.html" class="nav-link">AI 타이포그래피 디자인가이드</a>
+        <a href="lab.html" class="nav-link active">인터랙티브 실험실</a>
+    </div>
+    <div class="header-right">
+        <span class="typouniverse-logo">TYPOUNIVERSE</span>
+    </div>
+</header>
 <body>
     <div class="container">
         <header class="header">
             <div class="header-left">
-                <a href="index.html" class="ai-type-logo" style="text-decoration: none;">AI 타이포그래피 디자인가이드</a>
-                <span class="internet-text" style="color: #ff6b6b; font-weight: 600;">인터랙티브 실험실</span>
+                <a href="index.html" class="nav-link">AI 타이포그래피 디자인가이드</a>
+                <a href="lab.html" class="nav-link active">인터랙티브 실험실</a>
             </div>
             <div class="header-right">
                 <span class="typouniverse-logo">TYPOUNIVERSE</span>
             </div>
         </header>
 
-        <div class="contrast-test">
-            <h2 style="font-size: 20px; margin-bottom: 30px;">색상 대비 실시간 테스트</h2>
-            
-            <div class="color-inputs">
-                <div class="input-group">
-                    <label>Background color</label>
-                    <div class="color-input-wrapper">
-                        <input type="text" class="color-input" id="bg-color-input" value="#F5F5F5">
-                        <input type="color" class="color-picker" id="bg-color-picker" value="#F5F5F5">
+        <div class="lab-page" style="display: block;">
+            <div class="contrast-test">
+                <h2 style="font-size: 20px; margin-bottom: 30px;">색상 대비 실시간 테스트</h2>
+                
+                <div class="color-inputs">
+                    <div class="input-group">
+                        <label>Background color</label>
+                        <div class="color-input-wrapper">
+                            <input type="text" class="color-input" id="bg-color-input" value="#F5F5F5">
+                            <input type="color" class="color-picker" id="bg-color-picker" value="#F5F5F5">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Text color</label>
+                        <div class="color-input-wrapper">
+                            <input type="text" class="color-input" id="text-color-input" value="#333333">
+                            <input type="color" class="color-picker" id="text-color-picker" value="#333333">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Line height</label>
+                        <input type="range" min="1" max="2.5" step="0.1" value="1.6" id="line-height-input" style="width: 100%;">
+                        <div style="text-align: center; margin-top: 5px;">
+                            <span id="line-height-value">1.6</span>
+                        </div>
                     </div>
                 </div>
-                <div class="input-group">
-                    <label>Text color</label>
-                    <div class="color-input-wrapper">
-                        <input type="text" class="color-input" id="text-color-input" value="#333333">
-                        <input type="color" class="color-picker" id="text-color-picker" value="#333333">
+
+                <div class="contrast-display">
+                    <div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">텍스트-배경 명도대비</div>
+                        <div class="contrast-ratio" id="contrast-ratio">12.36 : 1</div>
+                    </div>
+                    <div class="contrast-status">
+                        <span class="status-badge pass" id="aa-status">AA</span>
+                        <span class="status-badge pass" id="aaa-status">AAA</span>
                     </div>
                 </div>
-                <div class="input-group">
-                    <label>Line height</label>
-                    <input type="range" min="1" max="2.5" step="0.1" value="1.6" id="line-height-input" style="width: 100%;">
-                    <div style="text-align: center; margin-top: 5px;">
-                        <span id="line-height-value">1.6</span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="contrast-display">
-                <div>
-                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">텍스트-배경 명도대비</div>
-                    <div class="contrast-ratio" id="contrast-ratio">12.36 : 1</div>
+                <div class="text-preview" id="large-preview">
+                    <div class="preview-title">대형 텍스트는 일반 글자인 경우 18pt(24px) 이상,</div>
+                    <div class="preview-body">굵은 글꼴일 경우 14pt 이상에 적용 됩니다.</div>
                 </div>
-                <div class="contrast-status">
-                    <span class="status-badge pass" id="aa-status">AA</span>
-                    <span class="status-badge pass" id="aaa-status">AAA</span>
+
+                <div class="text-preview" id="small-preview">
+                    <div class="preview-body">일반 텍스트는 일반 글자인 경우 16pt 이하,<br>굵은 글꼴일 경우 12pt 이하에 적용됩니다.</div>
                 </div>
-            </div>
-
-            <div class="text-preview" id="large-preview">
-                <div class="preview-title">대형 텍스트는 일반 글자인 경우 18pt(24px) 이상,</div>
-                <div class="preview-body">굵은 글꼴일 경우 14pt 이상에 적용 됩니다.</div>
-            </div>
-
-            <div class="text-preview" id="small-preview">
-                <div class="preview-body">일반 텍스트는 일반 글자인 경우 16pt 이하,<br>굵은 글꼴일 경우 12pt 이하에 적용됩니다.</div>
             </div>
         </div>
     </div>

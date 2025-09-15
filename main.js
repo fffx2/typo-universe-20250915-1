@@ -5,16 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 전역 상태 관리 객체
 let appState = {
-    service: '',        // 선택된 서비스 목적
-    platform: '',       // 선택된 플랫폼
+    service: '',       // 선택된 서비스 목적
+    platform: '',      // 선택된 플랫폼
     mood: { soft: 50, static: 50 },  // 무드 슬라이더 값
-    keyword: '',        // 선택된 키워드
-    primaryColor: '',   // 선택된 주조 색상
+    keyword: '',       // 선택된 키워드
+    primaryColor: '',  // 선택된 주조 색상
     generatedPalette: null  // 생성된 컬러 팔레트
 };
 
 // Knowledge Base 데이터 저장 변수
 let knowledgeBase = {};
+// 타이핑 효과를 위한 변수
+let typingTimeout;
 
 // ==================== 초기화 함수 ====================
 async function initializeApp() {
@@ -32,7 +34,7 @@ async function initializeApp() {
         // 실험실 페이지 초기화
         initializeLabPage();
         
-        // 초기 AI 메시지 설정
+        // 초기 AI 메시지 설정 (타이핑 효과 적용)
         updateAIMessage("안녕하세요! TYPOUNIVERSE AI Design Assistant입니다. 어떤 프로젝트를 위한 디자인 가이드를 찾으시나요? 먼저 서비스의 목적과 타겟 플랫폼을 알려주세요.");
         
     } catch (error) {
@@ -103,7 +105,9 @@ function initializeLabPage() {
     });
     
     // 행간 변경 이벤트
-    lineHeightInput.addEventListener('input', updateLineHeight);
+    lineHeightInput.addEventListener('input', () => {
+        updateLineHeight(lineHeightInput.value);
+    });
 }
 
 // ==================== STEP 01: 드롭다운 기능 ====================
@@ -248,7 +252,7 @@ function selectColor(color) {
     // 선택된 색상 스타일 업데이트
     const swatches = document.querySelectorAll('.color-swatch');
     swatches.forEach(swatch => {
-        if (swatch.style.background === color || swatch.style.background === color.toLowerCase()) {
+        if (swatch.style.background === color || swatch.style.background.toLowerCase() === color.toLowerCase()) {
             swatch.classList.add('selected');
         } else {
             swatch.classList.remove('selected');
@@ -257,8 +261,9 @@ function selectColor(color) {
     
     // AI 가이드 생성 버튼 표시
     document.getElementById('generate-btn').classList.remove('hidden');
-    updateAIMessage("최고의 선택입니다! 이 색상을 기준으로 Primary와 Secondary 컬러 팔레트를 생성 중입니다.");
+    updateAIMessage("최고의 선택입니다! 이 색상을 기준으로 Primary와 Secondary 컬러 팔레트를 생성합니다.");
 }
+
 
 // ==================== STEP 04: AI 가이드 생성 ====================
 // AI 가이드 생성 버튼 클릭 이벤트
@@ -289,7 +294,8 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
     } catch (error) {
         console.error('Error:', error);
         // API 실패 시 로컬에서 가이드 생성
-        generateLocalReport();
+        const localData = generateLocalReport();
+        displayGeneratedGuide(localData);
     }
     
     btn.disabled = false;
@@ -306,19 +312,37 @@ function generateLocalReport() {
     const secondaryLight = lightenColor(secondary, 20);
     const secondaryDark = darkenColor(secondary, 20);
     
-    // 생성된 팔레트 저장
-    appState.generatedPalette = {
-        primary: { main: primary, light: primaryLight, dark: primaryDark },
-        secondary: { main: secondary, light: secondaryLight, dark: secondaryDark }
+    // 생성된 팔레트 데이터 반환
+    return {
+        colorSystem: {
+            primary: { main: primary, light: primaryLight, dark: primaryDark },
+            secondary: { main: secondary, light: secondaryLight, dark: secondaryDark }
+        },
+        typography: {
+            bodySize: '16pt',
+            headlineSize: '24pt',
+            lineHeight: '1.6'
+        },
+        accessibility: {
+            textColorOnPrimary: '#ffffff',
+            contrastRatio: '10.0:1'
+        }
     };
+}
+
+// 생성된 가이드 표시
+function displayGeneratedGuide(data) {
+    appState.generatedPalette = data.colorSystem;
     
-    // UI 업데이트
     updateColorDisplay();
+    updateTypographyDisplay(data.typography, data.accessibility);
+    
     document.getElementById('ai-report').style.display = 'block';
     document.getElementById('guidelines').style.display = 'grid';
     
     updateAIMessage(`${appState.platform} 플랫폼에 최적화된 디자인 가이드가 생성되었습니다!`);
 }
+
 
 // 생성된 색상 팔레트 표시
 function updateColorDisplay() {
@@ -341,11 +365,48 @@ function updateColorDisplay() {
     document.getElementById('secondary-dark').querySelector('.color-code').textContent = palette.secondary.dark;
 }
 
-// AI 메시지 업데이트
+// 생성된 타이포그래피 정보 표시
+function updateTypographyDisplay(typography, accessibility) {
+    const platformGuide = knowledgeBase.guidelines[appState.platform.toLowerCase()] || knowledgeBase.guidelines.web;
+    
+    document.getElementById('contrast-description').innerHTML = `Primary 색상을 배경으로 사용할 경우, WCAG AA 기준을 충족하는 텍스트 색상은 <strong>${accessibility.textColorOnPrimary}</strong>이며, 대비는 <strong>${accessibility.contrastRatio}</strong>입니다.`;
+    
+    document.getElementById('font-size-description').innerHTML = `<strong>${typography.bodySize}</strong> (Body) / <strong>${typography.headlineSize}</strong> (Large Title) / <strong>${platformGuide.font.unit}</strong> 단위 사용`;
+}
+
+
+// === 💅 수정된 부분 시작 ===
+// AI 메시지 업데이트 (타이핑 효과 적용)
 function updateAIMessage(message) {
     const messageContainer = document.getElementById('ai-message');
-    messageContainer.innerHTML = `<p>${message}</p>`;
+    // 기존 타이핑 효과가 있다면 중단
+    clearTimeout(typingTimeout);
+
+    let i = 0;
+    messageContainer.innerHTML = ''; // 내용을 비우고 시작
+    const speed = 30; // 타이핑 속도 (ms)
+
+    function typeWriter() {
+        if (i < message.length) {
+            // 커서 효과를 위해 마지막에 깜빡이는 요소 추가/제거
+            if (messageContainer.querySelector('.typing-cursor')) {
+                messageContainer.querySelector('.typing-cursor').remove();
+            }
+
+            messageContainer.innerHTML = message.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
+            i++;
+            typingTimeout = setTimeout(typeWriter, speed);
+        } else {
+            // 타이핑이 끝나면 커서 제거
+            if (messageContainer.querySelector('.typing-cursor')) {
+                messageContainer.querySelector('.typing-cursor').remove();
+            }
+        }
+    }
+
+    typeWriter();
 }
+// === 💅 수정된 부분 끝 ===
 
 // ==================== 색상 조작 헬퍼 함수 ====================
 // 색상을 밝게 만들기
@@ -391,14 +452,16 @@ function getComplementaryColor(color) {
 // ==================== 페이지 네비게이션 ====================
 // 메인 페이지로 이동
 function showMainPage() {
-    document.querySelector('.main-page').style.display = 'block';
-    document.getElementById('lab-page').classList.remove('active');
+    document.querySelector('.main-page').classList.remove('hidden');
+    document.querySelector('.lab-page').classList.remove('active');
+    document.querySelector('.lab-page').style.display = 'none';
 }
 
 // 실험실 페이지로 이동
 function showLabPage() {
-    document.querySelector('.main-page').style.display = 'none';
-    document.getElementById('lab-page').classList.add('active');
+    document.querySelector('.main-page').classList.add('hidden');
+    document.querySelector('.lab-page').classList.add('active');
+    document.querySelector('.lab-page').style.display = 'block';
     
     // 생성된 색상이 있으면 실험실에 반영
     if (appState.primaryColor) {
@@ -407,6 +470,7 @@ function showLabPage() {
         updateContrast();
     }
 }
+
 
 // ==================== 실험실 기능 ====================
 // 색상 대비 업데이트

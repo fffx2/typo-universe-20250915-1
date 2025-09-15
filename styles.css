@@ -1,3 +1,4 @@
+/* 기본 스타일 */
 * {
     margin: 0;
     padding: 0;
@@ -17,7 +18,7 @@ body {
     padding: 40px 20px;
 }
 
-/* Header */
+/* Header: 네비게이션 스타일 수정 */
 .header {
     display: flex;
     justify-content: space-between;
@@ -31,18 +32,30 @@ body {
     gap: 30px;
 }
 
-.ai-type-logo {
+/* === 💅 수정된 부분 시작 === */
+
+/* 네비게이션 링크 기본 스타일 */
+.nav-link {
     font-size: 18px;
     font-weight: 600;
-    color: #ff6b6b;
+    text-decoration: none;
+    color: #666; /* 비활성화 상태일 때는 회색으로 설정했어요 */
     cursor: pointer;
+    transition: color 0.3s ease;
 }
 
-.internet-text {
-    font-size: 14px;
-    color: #666;
-    cursor: pointer;
+/* 마우스를 올렸을 때(hover) 스타일 */
+.nav-link:hover {
+    color: #ff6b6b; /* 마우스를 올리면 활성화 색상(분홍색)으로 변경돼요 */
 }
+
+/* 현재 활성화된 페이지의 링크 스타일 */
+.nav-link.active {
+    color: #ff6b6b; /* 활성화된 페이지는 항상 분홍색을 유지해요 */
+}
+
+/* === 💅 수정된 부분 끝 === */
+
 
 .typouniverse-logo {
     font-size: 20px;
@@ -178,7 +191,6 @@ body {
     outline: none;
     margin: 10px 0;
 }
-
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
